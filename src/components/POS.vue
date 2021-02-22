@@ -181,7 +181,6 @@ export default {
             this.totalBook= this.count.reduce((a,b) => a + b)
             this.discount=0
             this.discountGroup = this.count.slice(0,-1)
-            console.log(this.count)
             this.haveDiscount()
         }
         

@@ -79,7 +79,6 @@ export default {
       const response = await axios.get("http://localhost:3000/customer")
       this.customerData = response.data
       this.isLoading = true;
-      console.log(this.customerData)
     }
   }
 }
