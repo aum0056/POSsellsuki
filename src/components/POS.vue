@@ -103,8 +103,10 @@ export default {
             this.defaultPrice = this.bookData.map(data => parseInt(data.price))
         },
         resetData() {
-            this.price = []
-            this.count = []
+            for (var i = 0;i< this.bookData.length;i++) {
+                this.count[i] = 0
+                this.price[i] = 0
+            }
             this.paid = null
             this.totalPrice = 0
             this.totalBook = 0
