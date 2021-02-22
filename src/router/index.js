@@ -1,6 +1,6 @@
 import { createWebHistory, createRouter } from "vue-router";
 import POS from "@/components/POS.vue";
-import HelloWorld from "@/components/HelloWorld.vue";
+import Customer from "@/components/Customer.vue";
 
 const routes = [
   {
@@ -10,8 +10,8 @@ const routes = [
   },
   {
     path: '/Customer',
-    name: 'HelloWorld',
-    component: HelloWorld,
+    name: 'Customer',
+    component: Customer,
     props: true
   },
 ];

@@ -7,7 +7,7 @@
                 <p class="card-text">{{ item.title }}</p>
             </div>
         </div>
-        <div class="row">
+        <div class="row calculator">
             <div class="col-6">
                 <div>
                     <div class="concludeCost"><span>Subtotal</span><span>{{totalPrice.toFixed(2)}} บาท</span></div>
@@ -24,47 +24,36 @@
                     <div v-else>
                         <div class="concludeCost"><span>Change</span><span>0.00 บาท</span></div>
                     </div>
-                    <div class="submitBox">
-                        <router-link to="/Customer"><button type="button" class="btn btn-success submit">Submit</button></router-link>
-                        <router-link :to="{ name: 'HelloWorld', params: {discount, totalPrice, paid, count, price, bookData}}">test</router-link>
+                    <div class="submitBox" v-if="paid !== null">
+                        <button :onclick="putToCustomer" type="button" class="btn btn-success submit">submit</button>
+                    </div>
+                    <div class="submitBox" v-else>
+                        <button type="button" class="btn btn-secondary submit">submit</button>
                     </div>
                 </div>
             </div>
         </div>
-        <!-- <button class="box" v-for="(item,index) in bookData" :key="item.id" v-on:click="bookOnClick(item, index)">
-            <img :src = item.cover />
-            <div>{{ item.title }}</div>
-            <div>{{item.price}} บาท</div>
-        </button> -->
     </div>
     <div class="col-lg-4">
-        <!-- <div v-for="(num,index) in count" :key="index">
-            <li v-if="count[index] !== 0" class="list-group-item">
-                <button type="button" class="close" aria-label="Close" v-on:click="bookCancel(index)">
-                    <span aria-hidden="true">&times;</span>
-                </button>
-                <div class="row">
-                    <input class="col-2 price-box" type="number" v-model="count[index]" @input="changePrice(index)">
-                <div class="col-8 font-size">
-                    {{bookData[index].title}}
-                </div>
-                    <div class="col-2 price-box">{{price[index]}}</div>
-                </div>
-            </li>
-        </div> -->
         <table class="table table-striped">
             <thead>
                 <tr>
                     <th scope="col" width="10%">Qty</th>
                     <th scope="col">Name</th>
                     <th scope="col">Price</th>
+                    <th scope="col" width="10%"></th>
                 </tr>
             </thead>
-            <tbody v-for="(num,index) in count" :key="index">
+            <tbody class="fontBox" v-for="(num,index) in count" :key="index">
                 <tr  v-if="count[index] !== 0" >
                     <th scope="row"><input class="col-12 price-box" type="number" v-model="count[index]" @input="changePrice(index)"></th>
                     <td> {{bookData[index].title}}</td>
                     <td>{{price[index]}}</td>
+                    <td>
+                        <button type="button" class="close" aria-label="Close" v-on:click="bookCancel(index)">
+                            <span aria-hidden="true">&times;</span>
+                         </button>
+                    </td>
                 </tr>
             </tbody>
         </table>    
@@ -73,8 +62,8 @@
 </template>
 
 <script>
-// import axios from 'axios'
-import testData from '/src/testData.json'
+import store from '../store'
+import axios from 'axios'
 export default {
     name: 'POS',
     data(){
@@ -94,18 +83,36 @@ export default {
         }
     },
     async created() {
-        // const response = await axios.get("https://api.jsonbin.io/b/5f3154b06f8e4e3faf2f99de?fbclid=IwAR04RYRAxNxJZCu_YhjftxrpdqcAKDbnbD64ts9EFt5zV7vs4AFTBzyp7UU");
-        // this.bookData = response.data.books;
-        this.bookData = testData.books
+        const response = await axios.get("https://api.jsonbin.io/b/5f3154b06f8e4e3faf2f99de?fbclid=IwAR04RYRAxNxJZCu_YhjftxrpdqcAKDbnbD64ts9EFt5zV7vs4AFTBzyp7UU");
+        this.bookData = response.data.books;
         this.counter()
     },
     methods: {
+        setbooks() {
+            store.commit({ type: 'SET_BOOKS', newBooks: this.bookData })
+        },
+        async putToCustomer(){
+          await axios.put('http://localhost:3000/customer',{totalPrice: this.totalPrice, count: this.count, bookData: this.bookData, paid: this.paid, price: this.price, discount: this.discount})
+          this.resetData()
+        },
         counter() {
             for (var i = 0;i< this.bookData.length;i++) {
                 this.count.push(0)
                 this.price.push(0)
             }
             this.defaultPrice = this.bookData.map(data => parseInt(data.price))
+        },
+        resetData() {
+            this.price = []
+            this.count = []
+            this.paid = null
+            this.totalPrice = 0
+            this.totalBook = 0
+            this.discount = 0
+            this.discountBook = 0
+            this.maxDiscountBook = 0
+            this.test = []
+            this.discountGroup = []
         },
         bookOnClick(item, index) {
             this.price[index]+=parseInt(item.price)
@@ -182,7 +189,6 @@ export default {
 }
 </script>
 
-<!-- Add "scoped" attribute to limit CSS to this component only -->
 <style scoped>
 
 @media (min-width:768px) and (max-width: 991.98px) {
@@ -191,17 +197,21 @@ export default {
         width: calc(90% / 4);
         display: inline-block;
         font-size: 12px;
-        margin: 10px 4px 10px 4px;
+        margin: 0.5rem 0.25rem;
     }
+    .col-lg-4 {
+        margin-top: 10vw;
+    }
+    
 }
 
 @media (min-width: 992px) {
     .box {   
-        height: calc(110% / 4);
-        width: calc(90% / 4);
+        height: calc(100vh / 4);
+        width: calc(60vw / 4);
         display: inline-block;
-        font-size: 12px;
-        margin: 10px 4px 10px 4px;
+        font-size: 1.4vh;
+        margin: 0.5rem 0.25rem;
     }
 }
 .paid-box{
@@ -209,9 +219,9 @@ export default {
     text-align: right;
 }
 
-/* img {
+img {
     height: 100%;
-} */
+}
 
 .card-body {
     padding: 0.5rem;
@@ -221,9 +231,6 @@ export default {
     height: 100%;
 }
 
-.col-md-4 {
-    padding-right: 30px;
-}
 .price-box {
     text-align: center;
     margin: auto 0;
@@ -247,5 +254,11 @@ form.index-add-form {
 .submitBox {
     padding: 1vw 3vw;
     position: relative;
+}
+.calculator {
+    margin-top: 5vh;
+}
+.fontBox {
+    font-size: 1.4vh;
 }
 </style>

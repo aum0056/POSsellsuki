@@ -9,6 +9,7 @@
 // import HelloWorld from './components/HelloWorld.vue'
 // import POS from './components/POS.vue'
 
+
 export default {
   name: 'App',
   components:{
