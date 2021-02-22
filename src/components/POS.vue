@@ -92,7 +92,7 @@ export default {
             store.commit({ type: 'SET_BOOKS', newBooks: this.bookData })
         },
         async putToCustomer(){
-          await axios.put('http://localhost:3000/customer',{totalPrice: this.totalPrice, count: this.count, bookData: this.bookData, paid: this.paid, price: this.price, discount: this.discount})
+          await axios.put('https://sellsukibackend.herokuapp.com/customer',{totalPrice: this.totalPrice, count: this.count, bookData: this.bookData, paid: this.paid, price: this.price, discount: this.discount})
           this.resetData()
         },
         counter() {

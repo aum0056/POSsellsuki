@@ -76,7 +76,7 @@ export default {
   },
   methods: {
     async getData() {
-      const response = await axios.get("http://localhost:3000/customer")
+      const response = await axios.get("https://sellsukibackend.herokuapp.com/customer")
       this.customerData = response.data
       this.isLoading = true;
     }
